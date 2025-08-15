@@ -30,7 +30,7 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
   const deliveryCost =
     formData.basePrice && formData.weight && formData.ratePerKg
       ? Number.parseFloat(formData.basePrice) +
-        Number.parseFloat(formData.weight) * Number.parseFloat(formData.ratePerKg)
+      Number.parseFloat(formData.weight) * Number.parseFloat(formData.ratePerKg)
       : 0
 
   useEffect(() => {
@@ -90,23 +90,24 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
         ratePerKg: Number.parseFloat(formData.ratePerKg),
         deliveryCost: deliveryCost,
         createdAt: shipment?.createdAt || new Date().toISOString().split("T")[0],
-        id: shipment?.id || `SH${String(Date.now()).slice(-3).padStart(3, "0")}`,
+        _id: shipment?._id || `SH${String(Date.now()).slice(-3).padStart(3, "0")}`,
       }
 
-      const url = shipment
-        ? `${apiBaseUrl}/api/order/update/:orderId`
-        : `${apiBaseUrl}/api/order/create`
-      const method = shipment ? "patch" : "post"
 
+      const url = shipment
+        ? `${apiBaseUrl}/order/update/${shipment._id}`
+        : `${apiBaseUrl}/order/create`
+      const method = shipment ? "patch" : "post"
+      console.log("url: ",url)
       const response = await axios({
         method,
         url,
         data: shipmentData,
-        withCredentials: true, 
+        withCredentials: true,
       })
 
       console.log("Shipment saved:", response.data)
-      
+
 
       // Use response data if backend returns saved shipment
       onSave(response.data || shipmentData)

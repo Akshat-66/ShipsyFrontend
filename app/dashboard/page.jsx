@@ -329,6 +329,7 @@ export default function DashboardPage() {
   }
 
   const handleEdit = (shipment) => {
+    console.log("Ship Info",shipment)
     setEditingShipment(shipment)
     setShowForm(true)
     setShowPreviewModal(false)
@@ -337,7 +338,7 @@ export default function DashboardPage() {
   const handleSaveShipment = (shipmentData) => {
     if (editingShipment) {
       setShipments((prev) =>
-        prev.map((s) => (s.id === editingShipment.id ? { ...shipmentData, id: editingShipment.id } : s)),
+        prev.map((s) => (s._id === editingShipment._id ? { ...shipmentData, _id: editingShipment._id } : s)),
       )
       showNotification("Shipment updated successfully!")
     } else {
@@ -347,6 +348,7 @@ export default function DashboardPage() {
 
     setShowForm(false)
     setEditingShipment(null)
+    window.location.reload();
   }
 
   const handleDeleteClick = (shipment) => {
