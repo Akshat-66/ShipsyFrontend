@@ -329,7 +329,7 @@ export default function DashboardPage() {
   }
 
   const handleEdit = (shipment) => {
-    console.log("Ship Info",shipment)
+    console.log("Ship Info", shipment)
     setEditingShipment(shipment)
     setShowForm(true)
     setShowPreviewModal(false)
@@ -357,9 +357,14 @@ export default function DashboardPage() {
     setShowPreviewModal(false)
   }
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (shipmentToDelete) {
-      setShipments((prev) => prev.filter((s) => s.id !== shipmentToDelete.id))
+      console.log(shipmentToDelete._id)
+
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/order/delete/${shipmentToDelete._id}`, {
+        withCredentials: true
+      })
+      setShipments((prev) => prev.filter((s) => s._id !== shipmentToDelete._id))
       showNotification("Shipment deleted successfully!")
 
       const newTotalPages = Math.ceil((filteredAndSortedShipments.length - 1) / shipmentsPerPage)
