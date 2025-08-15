@@ -97,7 +97,7 @@ export default function AuthPage() {
         console.log("Authentication successful, redirecting to dashboard") // Debug log
         
         // Use replace to prevent back navigation to auth page
-        router.replace("/dashboard")
+        window.location.href = "/dashboard";
       } else {
         // Handle API error response
         const errorMessage = 
