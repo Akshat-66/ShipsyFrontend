@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { AuthGuard, useAuth } from "@/components/auth-guard"
 import { ShipmentForm } from "@/components/shipment-form"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import AIChatbot from "@/components/ai-chatbot"
+import axios from "axios"
 import {
   Truck,
   Plus,
@@ -31,109 +32,109 @@ import {
   ArrowDown,
 } from "lucide-react"
 
-// Mock shipment data
-const initialShipments = [
-  {
-    id: "SH001",
-    shipmentName: "Electronics Batch A",
-    status: "In Transit",
-    isInternational: true,
-    basePrice: 150,
-    weight: 25,
-    ratePerKg: 5,
-    deliveryCost: 275,
-    createdAt: "2024-01-15",
-    destination: "New York, USA",
-  },
-  {
-    id: "SH002",
-    shipmentName: "Medical Supplies",
-    status: "Delivered",
-    isInternational: false,
-    basePrice: 200,
-    weight: 15,
-    ratePerKg: 8,
-    deliveryCost: 320,
-    createdAt: "2024-01-14",
-    destination: "Los Angeles, CA",
-  },
-  {
-    id: "SH003",
-    shipmentName: "Automotive Parts",
-    status: "Pending",
-    isInternational: true,
-    basePrice: 300,
-    weight: 50,
-    ratePerKg: 6,
-    deliveryCost: 600,
-    createdAt: "2024-01-13",
-    destination: "Toronto, Canada",
-  },
-  {
-    id: "SH004",
-    shipmentName: "Fashion Items",
-    status: "In Transit",
-    isInternational: false,
-    basePrice: 100,
-    weight: 10,
-    ratePerKg: 4,
-    deliveryCost: 140,
-    createdAt: "2024-01-12",
-    destination: "Chicago, IL",
-  },
-  {
-    id: "SH005",
-    shipmentName: "Books Collection",
-    status: "Cancelled",
-    isInternational: false,
-    basePrice: 80,
-    weight: 20,
-    ratePerKg: 3,
-    deliveryCost: 140,
-    createdAt: "2024-01-11",
-    destination: "Miami, FL",
-  },
-  {
-    id: "SH006",
-    shipmentName: "Tech Gadgets",
-    status: "Delivered",
-    isInternational: true,
-    basePrice: 250,
-    weight: 12,
-    ratePerKg: 7,
-    deliveryCost: 334,
-    createdAt: "2024-01-10",
-    destination: "London, UK",
-  },
-  {
-    id: "SH007",
-    shipmentName: "Home Appliances",
-    status: "In Transit",
-    isInternational: false,
-    basePrice: 400,
-    weight: 35,
-    ratePerKg: 5,
-    deliveryCost: 575,
-    createdAt: "2024-01-09",
-    destination: "Seattle, WA",
-  },
-  {
-    id: "SH008",
-    shipmentName: "Sports Equipment",
-    status: "Pending",
-    isInternational: true,
-    basePrice: 180,
-    weight: 28,
-    ratePerKg: 4,
-    deliveryCost: 292,
-    createdAt: "2024-01-08",
-    destination: "Sydney, Australia",
-  },
-]
+// // Mock shipment data
+// const initialShipments = [
+//   {
+//     id: "SH001",
+//     shipmentName: "Electronics Batch A",
+//     status: "In Transit",
+//     isInternational: true,
+//     basePrice: 150,
+//     weight: 25,
+//     ratePerKg: 5,
+//     deliveryCost: 275,
+//     createdAt: "2024-01-15",
+//     destination: "New York, USA",
+//   },
+//   {
+//     id: "SH002",
+//     shipmentName: "Medical Supplies",
+//     status: "Delivered",
+//     isInternational: false,
+//     basePrice: 200,
+//     weight: 15,
+//     ratePerKg: 8,
+//     deliveryCost: 320,
+//     createdAt: "2024-01-14",
+//     destination: "Los Angeles, CA",
+//   },
+//   {
+//     id: "SH003",
+//     shipmentName: "Automotive Parts",
+//     status: "Pending",
+//     isInternational: true,
+//     basePrice: 300,
+//     weight: 50,
+//     ratePerKg: 6,
+//     deliveryCost: 600,
+//     createdAt: "2024-01-13",
+//     destination: "Toronto, Canada",
+//   },
+//   {
+//     id: "SH004",
+//     shipmentName: "Fashion Items",
+//     status: "In Transit",
+//     isInternational: false,
+//     basePrice: 100,
+//     weight: 10,
+//     ratePerKg: 4,
+//     deliveryCost: 140,
+//     createdAt: "2024-01-12",
+//     destination: "Chicago, IL",
+//   },
+//   {
+//     id: "SH005",
+//     shipmentName: "Books Collection",
+//     status: "Cancelled",
+//     isInternational: false,
+//     basePrice: 80,
+//     weight: 20,
+//     ratePerKg: 3,
+//     deliveryCost: 140,
+//     createdAt: "2024-01-11",
+//     destination: "Miami, FL",
+//   },
+//   {
+//     id: "SH006",
+//     shipmentName: "Tech Gadgets",
+//     status: "Delivered",
+//     isInternational: true,
+//     basePrice: 250,
+//     weight: 12,
+//     ratePerKg: 7,
+//     deliveryCost: 334,
+//     createdAt: "2024-01-10",
+//     destination: "London, UK",
+//   },
+//   {
+//     id: "SH007",
+//     shipmentName: "Home Appliances",
+//     status: "In Transit",
+//     isInternational: false,
+//     basePrice: 400,
+//     weight: 35,
+//     ratePerKg: 5,
+//     deliveryCost: 575,
+//     createdAt: "2024-01-09",
+//     destination: "Seattle, WA",
+//   },
+//   {
+//     id: "SH008",
+//     shipmentName: "Sports Equipment",
+//     status: "Pending",
+//     isInternational: true,
+//     basePrice: 180,
+//     weight: 28,
+//     ratePerKg: 4,
+//     deliveryCost: 292,
+//     createdAt: "2024-01-08",
+//     destination: "Sydney, Australia",
+//   },
+// ]
 
 export default function DashboardPage() {
   const { user, logout } = useAuth()
-  const [shipments, setShipments] = useState(initialShipments)
+  const [shipments, setShipments] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedShipment, setSelectedShipment] = useState(null)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
@@ -149,9 +150,29 @@ export default function DashboardPage() {
   const [sortBy, setSortBy] = useState("createdAt")
   const [sortOrder, setSortOrder] = useState("desc")
   const [showSuggestions, setShowSuggestions] = useState(false)
-
+  const api_url = process.env.NEXT_PUBLIC_API_BASE_URL;
   const shipmentsPerPage = 5
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await axios.get(`${api_url}/order/all`, {
+          withCredentials: true,
+        });
+        console.log(res.data); // use res.data instead of res.json()
+        const orders = res.data.orders;
+        const updatedOrders = orders.map((item) => ({
+          ...item,
+          deliveryCost: item.basePrice + (item.weight * item.ratePerKg), // Base Price + (Weight x Rate per Kg)
+        }));
 
+        setShipments(updatedOrders);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    fetchOrders();
+  }, []);
   const filteredAndSortedShipments = useMemo(() => {
     let filtered = shipments
 
@@ -532,10 +553,10 @@ export default function DashboardPage() {
                     typeFilter !== "all" ||
                     sortBy !== "createdAt" ||
                     sortOrder !== "desc") && (
-                    <Button variant="outline" onClick={clearFilters} size="sm">
-                      Clear Filters
-                    </Button>
-                  )}
+                      <Button variant="outline" onClick={clearFilters} size="sm">
+                        Clear Filters
+                      </Button>
+                    )}
                 </div>
               </div>
             </CardHeader>
@@ -586,7 +607,7 @@ export default function DashboardPage() {
                       </TableRow>
                     ) : (
                       currentShipments.map((shipment) => (
-                        <TableRow key={shipment.id}>
+                        <TableRow key={shipment._id}>
                           <TableCell className="font-medium">{shipment.id}</TableCell>
                           <TableCell>{shipment.shipmentName}</TableCell>
                           <TableCell>{getStatusBadge(shipment.status)}</TableCell>

@@ -1,15 +1,16 @@
 "use client"
 
+import axios from "axios"
 import { useEffect, useState } from "react"
 
 export function AuthGuard({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  
+
   useEffect(() => {
     // Check authentication status from localStorage
     const authStatus = localStorage.getItem("isAuthenticated")
-    
+
     if (authStatus === "true") {
       setIsAuthenticated(true);
 
@@ -53,10 +54,22 @@ export function useAuth() {
     }
   }, [])
 
-  const logout = () => {
+  const logout = async () => {
     localStorage.removeItem("isAuthenticated")
+    localStorage.removeItem("userId")
     localStorage.removeItem("username")
+
+    try {
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
+        withCredentials: true
+      });
+      console.log("Response:", res);
+
+    } catch (error) {
+      console.error("ERROR: ", error)
+    }
     window.location.href = "/"
+
   }
 
   return {

@@ -94,7 +94,7 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
       }
 
       const url = shipment
-        ? `${apiBaseUrl}/api/order/update`
+        ? `${apiBaseUrl}/api/order/update/:orderId`
         : `${apiBaseUrl}/api/order/create`
       const method = shipment ? "patch" : "post"
 
@@ -106,6 +106,7 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
       })
 
       console.log("Shipment saved:", response.data)
+      
 
       // Use response data if backend returns saved shipment
       onSave(response.data || shipmentData)
@@ -215,7 +216,7 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
               <div>
                 <Label htmlFor="deliveryCost">Delivery Cost ($)</Label>
                 <Input id="deliveryCost" value={deliveryCost.toFixed(2)} disabled className="bg-gray-50" />
-                <p className="text-xs text-gray-500 mt-1">Calculated: Base Price + (Weight × Rate per Kg)</p>
+                <p className="text-xs text-gray-500 mt-1">Calculated: Base Price + (Weight x Rate per Kg)</p>
               </div>
 
               <div className="md:col-span-2">
