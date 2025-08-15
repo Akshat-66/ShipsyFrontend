@@ -13,7 +13,7 @@ export function middleware(req) {
   }
 
   // Example: get token from cookies
-  const token = req.cookies.get("jwt")?.value;
+  const token = req.cookies.get("_vercel_jwt")?.value;
 
   // If no token, redirect to login
   if (!token) {
