@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -23,6 +24,8 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+
   // Calculate delivery cost
   const deliveryCost =
     formData.basePrice && formData.weight && formData.ratePerKg
@@ -32,7 +35,6 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
 
   useEffect(() => {
     if (shipment) {
-      // Edit mode - populate form with existing data
       setFormData({
         shipmentName: shipment.shipmentName || "",
         status: shipment.status || "Pending",
@@ -43,7 +45,6 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
         destination: shipment.destination || "",
       })
     } else {
-      // Add mode - reset form
       setFormData({
         shipmentName: "",
         status: "Pending",
@@ -58,42 +59,18 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
   }, [shipment, isOpen])
 
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: "",
-      }))
-    }
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }))
   }
 
   const validateForm = () => {
     const newErrors = {}
 
-    if (!formData.shipmentName.trim()) {
-      newErrors.shipmentName = "Shipment name is required"
-    }
-
-    if (!formData.basePrice || Number.parseFloat(formData.basePrice) <= 0) {
-      newErrors.basePrice = "Base price must be greater than 0"
-    }
-
-    if (!formData.weight || Number.parseFloat(formData.weight) <= 0) {
-      newErrors.weight = "Weight must be greater than 0"
-    }
-
-    if (!formData.ratePerKg || Number.parseFloat(formData.ratePerKg) <= 0) {
-      newErrors.ratePerKg = "Rate per kg must be greater than 0"
-    }
-
-    if (!formData.destination.trim()) {
-      newErrors.destination = "Destination is required"
-    }
+    if (!formData.shipmentName.trim()) newErrors.shipmentName = "Shipment name is required"
+    if (!formData.basePrice || Number.parseFloat(formData.basePrice) <= 0) newErrors.basePrice = "Base price must be greater than 0"
+    if (!formData.weight || Number.parseFloat(formData.weight) <= 0) newErrors.weight = "Weight must be greater than 0"
+    if (!formData.ratePerKg || Number.parseFloat(formData.ratePerKg) <= 0) newErrors.ratePerKg = "Rate per kg must be greater than 0"
+    if (!formData.destination.trim()) newErrors.destination = "Destination is required"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -101,15 +78,11 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    if (!validateForm()) {
-      return
-    }
+    if (!validateForm()) return
 
     setIsLoading(true)
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
       const shipmentData = {
         ...formData,
         basePrice: Number.parseFloat(formData.basePrice),
@@ -120,9 +93,28 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
         id: shipment?.id || `SH${String(Date.now()).slice(-3).padStart(3, "0")}`,
       }
 
-      onSave(shipmentData)
+      const url = shipment
+        ? `${apiBaseUrl}/api/order/update`
+        : `${apiBaseUrl}/api/order/create`
+      const method = shipment ? "patch" : "post"
+
+      const response = await axios({
+        method,
+        url,
+        data: shipmentData,
+        withCredentials: true, 
+      })
+
+      console.log("Shipment saved:", response.data)
+
+      // Use response data if backend returns saved shipment
+      onSave(response.data || shipmentData)
+    } catch (error) {
+      console.error("Error saving shipment:", error)
+      alert("Failed to save shipment. Please try again.") // optional
+    } finally {
       setIsLoading(false)
-    }, 500)
+    }
   }
 
   if (!isOpen) return null

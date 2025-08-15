@@ -5,13 +5,14 @@ import { useEffect, useState } from "react"
 export function AuthGuard({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-
+  
   useEffect(() => {
     // Check authentication status from localStorage
     const authStatus = localStorage.getItem("isAuthenticated")
-
+    
     if (authStatus === "true") {
-      setIsAuthenticated(true)
+      setIsAuthenticated(true);
+
     } else {
       // Redirect to login if not authenticated
       window.location.href = "/login"
