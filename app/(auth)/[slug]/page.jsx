@@ -41,7 +41,7 @@ export default function AuthPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validateForm()) return
     setIsLoading(true)
@@ -59,8 +59,6 @@ export default function AuthPage() {
       const response = await axios.post(url, {
         username: formData.username,
         password: formData.password
-      },{
-        withCredentials: true // make sure cookies are included
       }
     )
 
@@ -79,7 +77,12 @@ export default function AuthPage() {
         try {
           if (typeof window !== 'undefined' && window.localStorage) {
             localStorage.setItem("isAuthenticated", "true")
-            localStorage.setItem("username", formData.username)
+            localStorage.setItem("username", formData.username);
+
+            // Store Bearer token
+            if (response.data.token) {
+              localStorage.setItem("token", response.data.token); // <--- store token here
+            }
           }
         } catch (storageError) {
           console.warn("localStorage not available:", storageError)
@@ -97,7 +100,8 @@ export default function AuthPage() {
         console.log("Authentication successful, redirecting to dashboard") // Debug log
         
         // Use replace to prevent back navigation to auth page
-        window.location.href = "/dashboard";
+       // With this:
+          router.push("/dashboard")
       } else {
         // Handle API error response
         const errorMessage = 

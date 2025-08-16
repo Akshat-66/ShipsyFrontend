@@ -59,8 +59,6 @@ export default function AuthPage() {
       const response = await axios.post(url, {
         username: formData.username,
         password: formData.password
-      },{
-        withCredentials: true // make sure cookies are included
       }
     )
 

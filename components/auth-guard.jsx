@@ -58,10 +58,12 @@ export function useAuth() {
     localStorage.removeItem("isAuthenticated")
     localStorage.removeItem("userId")
     localStorage.removeItem("username")
-
+    const token = localStorage.getItem('token')
     try {
       const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
-        withCredentials: true
+        headers: {
+          Authorization: `${token}`
+        }
       });
       console.log("Response:", res);
 

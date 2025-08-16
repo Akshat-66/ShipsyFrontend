@@ -155,8 +155,11 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
+        const token = localStorage.getItem("token");
         const res = await axios.get(`${api_url}/order/all`, {
-          withCredentials: true,
+          headers: {
+            Authorization: `${token}`
+          }
         });
         console.log(res.data); // use res.data instead of res.json()
         const orders = res.data.orders;
@@ -360,9 +363,12 @@ export default function DashboardPage() {
   const handleConfirmDelete = async () => {
     if (shipmentToDelete) {
       console.log(shipmentToDelete._id)
-
+      const token = localStorage.getItem('token')
+      console.log("token at dash : ",token)
       const res = await axios.delete(`${process.env.NEXT_PUBLIC_API_BASE_URL}/order/delete/${shipmentToDelete._id}`, {
-        withCredentials: true
+        headers: {
+          Authorization: `${token}`
+        }
       })
       setShipments((prev) => prev.filter((s) => s._id !== shipmentToDelete._id))
       showNotification("Shipment deleted successfully!")

@@ -93,17 +93,20 @@ export function ShipmentForm({ shipment, onSave, onCancel, isOpen }) {
         _id: shipment?._id || `SH${String(Date.now()).slice(-3).padStart(3, "0")}`,
       }
 
-
+      const token = localStorage.getItem('token')
       const url = shipment
         ? `${apiBaseUrl}/order/update/${shipment._id}`
         : `${apiBaseUrl}/order/create`
-      const method = shipment ? "patch" : "post"
+      const method = shipment ? "put" : "post"
       console.log("url: ",url)
       const response = await axios({
         method,
         url,
         data: shipmentData,
-        withCredentials: true,
+        headers: {
+          Authorization: `${token}`
+        },
+        withCredentials : true
       })
 
       console.log("Shipment saved:", response.data)
