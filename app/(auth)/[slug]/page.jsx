@@ -250,10 +250,9 @@ const handleSubmit = async (e) => {
             <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <h4 className="text-sm font-medium text-blue-900 mb-2">Demo Credentials</h4>
               <p className="text-sm text-blue-700">
-                <strong>Username:</strong> Any username
+                <strong>Username:</strong> Hire_Me
                 <br />
-                <strong>Password:</strong> shipsy123
-              </p>
+                <strong>Password:</strong> Hireme123              </p>
             </div>
 
             <div className="mt-6 text-center">
