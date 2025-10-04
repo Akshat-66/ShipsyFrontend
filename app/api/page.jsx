@@ -242,7 +242,7 @@ export default function AuthPage() {
             </form>
 
             <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">Demo Credentials</h4>
+              <h4 className="text-sm font-medium text-blue-900 mb-2">Don't have an account? Please sign up first before signing in."</h4>
               <p className="text-sm text-blue-700">
                 <strong>Username:</strong> Any username
                 <br />
